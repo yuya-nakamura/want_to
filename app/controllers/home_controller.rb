@@ -33,20 +33,25 @@ class HomeController < ApplicationController
     ca_flv_info = CaFlvInfo.new
     flv_info = ca_flv_info.check_flv_info(@id)
 
+    if flv_info.nil?
+      msg = '動画情報取得時にエラーが発生しました。'
+      logger.info 'closed: 1'
+      flash[:notice] = msg
+      return redirect_to :back
+    end
+
     if flv_info.error
       msg = "指定された動画取得時にエラーが発生しました。動画ID = #{@id}"
       logger.info "#{msg}, flv_info = #{flv_info.inspect}"
       flash[:notice] = msg
-      redirect_to :back
-      return
+      return redirect_to :back
     end
 
     if flv_info.deleted
       msg = "指定された動画は削除されています。動画ID = #{@id}"
       logger.info "#{msg} , flv_info = #{flv_info.inspect}"
       flash[:notice] = msg
-      redirect_to :back
-      return
+      return redirect_to :back
     end
 
     @bookmarks = Bookmark.where(smid: @id)

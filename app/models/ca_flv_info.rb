@@ -4,12 +4,12 @@ class CaFlvInfo < ActiveRecord::Base
     flv_info = CaFlvInfo.find_by(smid: video_id)
     if flv_info.nil?
       cookie = login_nicovideo(ENV['NICOADD'], ENV['NICOPASS'])
-      flv_info = get_flv_info(cookie, video_id)
-      logger.info flv_info
-      if !flv_info.key? :closed
+      response = get_flv_info(cookie, video_id)
+      logger.info response
+      if !response.key? :closed
         cache = CaFlvInfo.new(
-          smid: video_id, ms: flv_info[:ms], thread_id: flv_info[:thread_id],
-          deleted: flv_info[:deleted], error: flv_info[:error])
+          smid: video_id, ms: response[:ms], thread_id: response[:thread_id],
+          deleted: response[:deleted], error: response[:error])
         cache.save
         return cache
       end
